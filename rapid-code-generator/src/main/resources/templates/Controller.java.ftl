@@ -1,9 +1,8 @@
 <#assign cls = className?substring(className?last_index_of(".") + 1)>
 <#assign clsLower = cls?uncap_first>
-<#assign packageName = className?substring(0, className?last_index_of("."))>
-<#assign servicePackage = packageName?replace(".model", ".service")>
+<#assign servicePackage = package + ".service">
 
-package ${packageName}.controller;
+package ${package}.controller;
 
 import ${className};
 import ${servicePackage}.${cls}Service;

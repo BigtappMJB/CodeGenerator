@@ -15,6 +15,7 @@ import com.codegen.service.CodeGeneratorService;
 @RequestMapping("/api/generator")
 public class CodeGenController {
 
+	
     @Autowired
     private CodeGeneratorService codeGeneratorService;
 

@@ -2,6 +2,8 @@ package com.codegen.model;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class GeneratorInput {
 
     private String className;
@@ -26,10 +28,13 @@ public class GeneratorInput {
 
     
     public static class Field {
+    	@JsonProperty("name")
         private String name;
+    	@JsonProperty("type")
         private String type;
+    	@JsonProperty("primary")
+        private Boolean primary; 
 
-      
         public String getName() {
             return name;
         }
@@ -45,5 +50,14 @@ public class GeneratorInput {
         public void setType(String type) {
             this.type = type;
         }
+
+        public Boolean getPrimary() {  
+            return primary;
+        }
+
+        public void setPrimary(Boolean primary) {  
+            this.primary = primary;
+        }
     }
+
 }
