@@ -13,11 +13,11 @@
     </parent>
 
     <groupId>com.codegen</groupId>
-    <artifactId>juned</artifactId>
+    <artifactId>efjuned</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>juned</name>
+    <name>efjuned</name>
     <description>Generated Spring Boot App</description>
 
     <properties>

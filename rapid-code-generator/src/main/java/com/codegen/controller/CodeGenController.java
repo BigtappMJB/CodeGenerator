@@ -7,10 +7,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.codegen.exception.RapidControllerException;
 import com.codegen.model.GeneratorInput;
 import com.codegen.service.CodeGeneratorService;
-//import com.codegen.service.FreemarkerService;
 
+import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @RestController
 @RequestMapping("/api/generator")
 public class CodeGenController {
@@ -19,41 +23,16 @@ public class CodeGenController {
     @Autowired
     private CodeGeneratorService codeGeneratorService;
 
-//    @Autowired
-//    private FreemarkerService freemarkerService;
-
-  
-    @PostMapping("/entity")
-    public ResponseEntity<String> generateEntity(@RequestBody GeneratorInput input) {
-        String generatedCode = codeGeneratorService.generateEntity(input);
-        return ResponseEntity.ok(generatedCode);
-    }
-
-   
-    @PostMapping("/repository")
-    public ResponseEntity<String> generateRepository(@RequestBody GeneratorInput input) {
-        String generatedCode = codeGeneratorService.generateRepository(input);
-        return ResponseEntity.ok(generatedCode);
-    }
-
-    @PostMapping("/service")
-    public ResponseEntity<String> generateService(@RequestBody GeneratorInput input) {
-        String generatedCode = codeGeneratorService.generateService(input);
-        return ResponseEntity.ok(generatedCode);
-    }
-
-    
-    @PostMapping("/controller")
-    public ResponseEntity<String> generateController(@RequestBody GeneratorInput input) {
-        String generatedCode = codeGeneratorService.generateController(input);
-        return ResponseEntity.ok(generatedCode);
-    }
-
-    
     @PostMapping("/generateApp")
-    public ResponseEntity<String> generateFullApp(@RequestBody GeneratorInput input) {
+    public ResponseEntity<String> generateFullApp(@RequestBody @Valid GeneratorInput input) {
+    	 log.info("Received request to generate Spring Boot app for class: {}", input.getClassName());
+        if (input.getClassName() == null || input.getClassName().isEmpty()) {
+        	 log.warn("Invalid input: input or className is null");
+            throw new RapidControllerException("Class name must not be null or empty");
+        }
         String message = codeGeneratorService.generateFullSpringBootApp(input);
-        
+        log.info("Application generation response: {}", message);
         return ResponseEntity.ok(message);
     }
 }
+

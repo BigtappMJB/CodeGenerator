@@ -4,60 +4,38 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class GeneratorInput {
 
-    private String className;
-    private List<Field> fields;
+	@NotEmpty(message = "Class name must not be empty")
+	private String className;
 
-    
-    public String getClassName() {
-        return className;
-    }
+	@Valid
+	@NotEmpty(message = "At least one field is required")
+	private List<Field> fields;
 
-    public void setClassName(String className) {
-        this.className = className;
-    }
+	
+	@Getter
+	@Setter
+	public static class Field {
+		@JsonProperty("name")
+		@NotEmpty(message = "Field name must not be empty")
+		private String name;
+		
+		@JsonProperty("type")
+		@NotEmpty(message = "Field type must not be empty")
+		private String type;
+		
+		@JsonProperty("primary")
+		private Boolean primary;
 
-    public List<Field> getFields() {
-        return fields;
-    }
-
-    public void setFields(List<Field> fields) {
-        this.fields = fields;
-    }
-
-    
-    public static class Field {
-    	@JsonProperty("name")
-        private String name;
-    	@JsonProperty("type")
-        private String type;
-    	@JsonProperty("primary")
-        private Boolean primary; 
-
-        public String getName() {
-            return name;
-        }
-
-        public void setName(String name) {
-            this.name = name;
-        }
-
-        public String getType() {
-            return type;
-        }
-
-        public void setType(String type) {
-            this.type = type;
-        }
-
-        public Boolean getPrimary() {  
-            return primary;
-        }
-
-        public void setPrimary(Boolean primary) {  
-            this.primary = primary;
-        }
-    }
+		
+	}
 
 }
