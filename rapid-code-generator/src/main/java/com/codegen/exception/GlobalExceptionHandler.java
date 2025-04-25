@@ -45,7 +45,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ServiceException.class)
     public ResponseEntity<ErrorResponse> handleServiceException(ServiceException ex) {
-    	 log.error("ServiceException: {}", ex.getMessage(), ex);
+        log.error("ServiceException: {}", ex.getMessage(), ex);
         ErrorResponse error = new ErrorResponse(
             LocalDateTime.now(), 
             ex.getMessage(), 
@@ -54,6 +54,9 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+
+    
+    
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGenericException(Exception ex) {
     	 log.error("Unhandled Exception: {}", ex.getMessage(), ex);

@@ -108,6 +108,7 @@
 				</configuration>
 			</plugin>
 		</plugins>
+		 <!--<finalName>${groupId}-${artifactId}</finalName> -->
 	</build>
 
 </project>
