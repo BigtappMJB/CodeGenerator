@@ -129,6 +129,7 @@ public class LoginService {
 				} else {
 					logger.info("Getting user details");
 					// Get user details by user id
+					
 					userDetails = userManagementService.getUserDetails(user.getUserName());
 					logger.info("Checking user details contains user id");
 					if (!("").equals(userDetails.getUserId()) && null != userDetails.getUserId()) {
@@ -140,6 +141,7 @@ public class LoginService {
 						dmaUtils.logInfoDebugMessage(logger, message);
 						httpStatus = HttpStatus.OK;
 					} else if (userDetails.getPermissions() == null) {
+						logger.error("Error in userdetails, No permissions found");
 						message = userDetails.getResponse().getMessage();
 						httpStatus = HttpStatus.NOT_FOUND;
 					} else {
@@ -286,7 +288,10 @@ public class LoginService {
 				return false;
 			} else {
 				logger.info("Decrypting pwd");
+				logger.info("DB user password : " + user.getPassWord());
 				deCryptedPwd = dmaUtils.deCrypt(user.getPassWord());
+                logger.info("Decrypted password : " + deCryptedPwd);
+				logger.info("DB user password : " + dbUser.getPassword());
 				if (!dmaUtils.deCrypt(dbUser.getPassword()).equals(deCryptedPwd)) {
 					response = new Response(
 							CmdConstants.MSG_USER_AUTORIZATION_FAILED + " " + CmdConstants.INVALID_PASSWORD,

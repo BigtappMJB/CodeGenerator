@@ -1,4 +1,11 @@
-import { Component, Input, OnInit, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
+import {
+  Component,
+  Input,
+  OnInit,
+  OnChanges,
+  SimpleChanges,
+  ViewChild,
+} from '@angular/core';
 import * as XLSX from 'xlsx';
 import { TableData } from 'src/app/shared/models/excel-data.model';
 import { MyAppHttp } from 'src/app/shared/services/myAppHttp.service';
@@ -77,10 +84,13 @@ export class UploadFileComponent implements OnInit, OnChanges {
     this.getTableNamesList();
     this.getAllTables();
   }
-  
+
   ngOnChanges(changes: SimpleChanges): void {
     console.log('UploadFileComponent: Input changes detected', changes);
-    if (changes['inputSubModuleId'] && !changes['inputSubModuleId'].firstChange) {
+    if (
+      changes['inputSubModuleId'] &&
+      !changes['inputSubModuleId'].firstChange
+    ) {
       console.log('SubModuleId changed to:', this.inputSubModuleId);
       // Clear existing tables and reload with new subModuleId
       this.tablesListWithPermissionId = [];
@@ -92,7 +102,12 @@ export class UploadFileComponent implements OnInit, OnChanges {
     let data = localStorage.getItem('LoginData');
     if (data) {
       this.getSubmoduleID(data);
-      console.log('Getting tables for subModuleId:', this.subModuleId, 'roleId:', this.loginData.roleId);
+      console.log(
+        'Getting tables for subModuleId:',
+        this.subModuleId,
+        'roleId:',
+        this.loginData.roleId
+      );
       this.tableDataService
         .getTableNamesBySubModuleIdAndRoleId(
           this.loginData.roleId,
@@ -103,26 +118,37 @@ export class UploadFileComponent implements OnInit, OnChanges {
           (response) => {
             console.log('API Response for tables:', response);
             this.tablesListWithPermissionId = []; // Clear existing data
-            
+
             if (response && response.length > 0) {
               // If we got tables from the API, use them
               for (let element of response) {
                 if (element.permissionId !== 6) {
-                  element.readabletableName = element.tableName.replace(/_/g, ' ');
+                  element.readabletableName = element.tableName.replace(
+                    /_/g,
+                    ' '
+                  );
                   this.tablesListWithPermissionId.push(element);
                 }
               }
-              console.log('Processed tables from API:', this.tablesListWithPermissionId);
+              console.log(
+                'Processed tables from API:',
+                this.tablesListWithPermissionId
+              );
             } else {
               // If no tables were returned, use getAllTables instead
-              console.log('No tables found for subModuleId, using getAllTables instead');
+              console.log(
+                'No tables found for subModuleId, using getAllTables instead'
+              );
               this.tableDataService.getAllTables().subscribe((tables: any) => {
                 console.log('All tables:', tables);
                 for (let table of tables) {
                   table.readabletableName = table.tableName.replace(/_/g, ' ');
                   this.tablesListWithPermissionId.push(table);
                 }
-                console.log('Processed all tables:', this.tablesListWithPermissionId);
+                console.log(
+                  'Processed all tables:',
+                  this.tablesListWithPermissionId
+                );
               });
             }
           },
@@ -135,7 +161,10 @@ export class UploadFileComponent implements OnInit, OnChanges {
                 table.readabletableName = table.tableName.replace(/_/g, ' ');
                 this.tablesListWithPermissionId.push(table);
               }
-              console.log('Processed all tables (fallback):', this.tablesListWithPermissionId);
+              console.log(
+                'Processed all tables (fallback):',
+                this.tablesListWithPermissionId
+              );
             });
           }
         );
@@ -153,11 +182,11 @@ export class UploadFileComponent implements OnInit, OnChanges {
     this.loginData = JSON.parse(data);
     console.log('Input SubModuleId:', this.inputSubModuleId);
     console.log('Login permissions:', this.loginData.permissions);
-    
+
     // Always use the input subModuleId directly
     this.subModuleId = this.inputSubModuleId;
     console.log('Using subModuleId:', this.subModuleId);
-    
+
     // Force reload tables for this subModuleId
     this.tablesListWithPermissionId = [];
   }
@@ -247,7 +276,6 @@ export class UploadFileComponent implements OnInit, OnChanges {
         pkTableDetails
       ));
     }
-    debugger;
     fkTableDetails = this.removeDuplicates(fkTableDetails);
     if (fkTableDetails.length > 0) {
       this.getForeignKeyTableData(pkTableDetails, fkTableDetails);

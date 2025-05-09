@@ -3,7 +3,6 @@ package com.cmd.excel.repository;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -12,7 +11,6 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -32,15 +30,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Repository;
 
 import com.cmd.excel.helper.DmaEmailHelper;
 import com.cmd.excel.utils.Constants;
 import com.cmd.excel.utils.DataSourceConfig;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -610,6 +604,32 @@ public class RegisterRepository {
             conn.close();
         }
     }
+
+	public void updateUserRoleAndStatus(String email, int roleId, String string) {
+		 String updateQuery = "UPDATE USERS SET role_id = ?, UPDATED_DATE = ? WHERE EMAIL = ?";
+
+		    try (Connection conn = connector.getDBConnection(); 
+		         PreparedStatement stmt = conn.prepareStatement(updateQuery)) {
+
+		        // Set the parameters for the update query
+		        stmt.setInt(1, roleId);
+		       
+		        stmt.setTimestamp(2, Timestamp.valueOf(LocalDateTime.now())); // Setting the current time as UPDATED_DATE
+		        stmt.setString(3, email);
+
+		        // Execute the update query
+		        int rowsAffected = stmt.executeUpdate();
+
+		        if (rowsAffected > 0) {
+		            LOG.info("Successfully updated role and status for user: {}", email);
+		        } else {
+		            LOG.warn("No user found with email: {}", email);
+		        }
+		    } catch (SQLException e) {
+		        LOG.error("Error updating user role and status for email: {}", email, e);
+		    }
+		
+	}
 
 	/*
 	 * public void sendPasswordUpdateEmail(String user_email) { Message msg = new

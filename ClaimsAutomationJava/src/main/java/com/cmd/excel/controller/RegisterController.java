@@ -38,6 +38,30 @@ public class RegisterController {
 	public String sayHello() {
 		return "Hello, World!";
 	}
+	@PostMapping("/approve_user")
+	public ResponseEntity<Object> approveUser(@RequestBody Map<String, Object> data) throws SQLException {
+	    String email = (String) data.get("email");
+	    int roleId = (int) data.get("roleId");
+
+	    // Fetch the user details from the repository
+	    Map<String, Object> user = registerRepository.getUserByEmail(email);
+
+	    // If user not found
+	    if (user == null) {
+	        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", "User not found"));
+	    }
+
+	    // Check if the user is already approved
+//	    if ("Y".equals(user.get("status"))) {
+//	        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", "User is already approved"));
+//	    }
+
+	    // Update the user's role to the provided roleId and change status to "Y" (approved)
+	    registerRepository.updateUserRoleAndStatus(email, roleId, "Y");
+
+	    // Send a success response
+	    return ResponseEntity.ok(Map.of("message", "User approved successfully"));
+	}
 
 	// Route for Registration
 	@PostMapping("/registration")
@@ -63,6 +87,7 @@ public class RegisterController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "Failed to send OTP"));
 		}
 	}
+	
 
 	// Route for Verifying OTP
 	@PostMapping("/verify_otp")

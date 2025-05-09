@@ -201,7 +201,7 @@ export class LoginComponent implements OnInit {
               this.authorizationMessage = MyAppHttp.ToasterMessage.activeOrNot;
               return;
             }
-
+            debugger;
             if (response.isDefaultPasswordChanged == null) {
               localStorage.setItem('LoginData', JSON.stringify(response));
               this.router.navigateByUrl('/changepassword');

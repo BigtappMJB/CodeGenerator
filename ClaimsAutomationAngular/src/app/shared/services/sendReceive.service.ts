@@ -65,6 +65,7 @@ export class SendReceiveService {
   }
 
   navigateToMenu(subMenuId: any) {
+    debugger;
     if (subMenuId == 1) {
       this.router.navigateByUrl('administration/roles');
     } else if (subMenuId == 2) {
@@ -74,11 +75,12 @@ export class SendReceiveService {
     } else if (subMenuId == 15) {
       this.router.navigateByUrl('administration/tableConfigurator');
     } else if (subMenuId == 6) {
-      // this.router.navigateByUrl("dataUpload/cAD");
-      this.router.navigateByUrl('dataUpload/mappingupload');
+      this.router.navigateByUrl('fileData/loadFileDetails');
+      // this.router.navigateByUrl('dataUpload/mappingupload');
     } else if (subMenuId == 7) {
-      // this.router.navigateByUrl("dataUpload/cMD");
-      this.router.navigateByUrl('dataUpload/fileupload');
+      // this.router.navigateByUrl('dataUpload/cMD');
+      this.fileUploadNavigationService.navigateToFileUpload(18);
+      // this.router.navigateByUrl('dataUpload/fileupload');
     } else if (subMenuId == 8) {
       this.router.navigateByUrl('staticDataUpload/reportStaticData');
     } else if (subMenuId == 9) {

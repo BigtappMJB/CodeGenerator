@@ -329,7 +329,7 @@
             Reject
           </button>
         </div>
-        
+
         <!-- Controls for approved users (roleId !== 0) -->
         <div *ngIf="element.roleId !== 0">
           <mat-slide-toggle
@@ -338,7 +338,7 @@
           ></mat-slide-toggle>
           <span
             matTooltip="Edit"
-            style="cursor: pointer; margin-left: 10px;"
+            style="cursor: pointer; margin-left: 10px"
             *ngIf="!!pagePermissions.Edit"
             (click)="onUserEdit(element)"
             (keydown)="onUserEdit(element)"
@@ -346,7 +346,7 @@
           ></span>
           <span
             matTooltip="Delete"
-            style="cursor: pointer; margin-left: 10px;"
+            style="cursor: pointer; margin-left: 10px"
             *ngIf="!!pagePermissions.Delete"
             (click)="onUserDelete(element)"
             (keydown)="onUserDelete(element)"

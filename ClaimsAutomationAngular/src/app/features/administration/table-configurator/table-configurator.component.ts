@@ -159,7 +159,7 @@ export class TableConfiguratorComponent implements OnInit {
       .subscribe((response) => {
         let data = [];
         data.push(response ?? []);
-        debugger;
+
         this.templateList = data ?? [];
       });
   }

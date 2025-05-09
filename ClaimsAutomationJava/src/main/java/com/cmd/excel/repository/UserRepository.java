@@ -13,7 +13,7 @@ import com.cmd.excel.model.Users;
  */
 public interface UserRepository extends JpaRepository<Users, Integer> {
 
-	@Query(value="select * from users usr where usr.user_name = :userName", nativeQuery=true) 
+	@Query(value="select * from users usr where usr.user_name = :userName LIMIT 1", nativeQuery=true ) 
 	Users findUserByUserId(@Param("userName") String userName);
 	
 	Users findUserById(int id);

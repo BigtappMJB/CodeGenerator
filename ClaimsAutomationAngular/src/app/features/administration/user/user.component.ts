@@ -8,15 +8,23 @@ import { MatSort } from '@angular/material/sort';
 import { SendReceiveService } from 'src/app/shared/services/sendReceive.service';
 import { MyAppHttp } from 'src/app/shared/services/myAppHttp.service';
 import { NotifierService } from 'src/app/notifier.service';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
 
 @Component({
   selector: 'app-user',
   templateUrl: './user.component.html',
-  styleUrls: ['./user.component.css']
+  styleUrls: ['./user.component.css'],
 })
-
 export class UserComponent implements OnInit {
-  displayedColumns: string[] = ['sno', 'userName', 'firstName', 'lastName', 'email', 'roleName', 'actions'];
+  displayedColumns: string[] = [
+    'sno',
+    'userName',
+    'firstName',
+    'lastName',
+    'email',
+    'roleName',
+    'actions',
+  ];
   UserList: any;
   AddUserForm!: FormGroup;
   isAddUserForm: boolean = false;
@@ -25,14 +33,27 @@ export class UserComponent implements OnInit {
     email_id: [
       { type: 'required', message: 'Please Enter Email' },
       { type: 'pattern', message: 'Please enter valid Email ID' },
-      { type: 'maxlength', message: 'Password should be maximum 50 characters.' }
+      {
+        type: 'maxlength',
+        message: 'Password should be maximum 50 characters.',
+      },
     ],
     password: [
       { type: 'required', message: 'Please Enter Password' },
-      { type: 'pattern', message: 'Password should contain at least one uppercase letter, one lowercase letter, one number and one special character' },
-      { type: 'minlength', message: 'Password should be minimum 12 characters.' },
-      { type: 'maxlength', message: 'Password should be maximum 20 characters.' }
-    ]
+      {
+        type: 'pattern',
+        message:
+          'Password should contain at least one uppercase letter, one lowercase letter, one number and one special character',
+      },
+      {
+        type: 'minlength',
+        message: 'Password should be minimum 12 characters.',
+      },
+      {
+        type: 'maxlength',
+        message: 'Password should be maximum 20 characters.',
+      },
+    ],
   };
   pagePermissions: any;
   loginData: any;
@@ -52,40 +73,54 @@ export class UserComponent implements OnInit {
   Message: any;
   errorType: any;
 
-  constructor(private userService: UserService,
-    private formBuilder: FormBuilder, public sendReceiveService: SendReceiveService, private notifierService: NotifierService) { }
+  constructor(
+    private userService: UserService,
+    private formBuilder: FormBuilder,
+    public sendReceiveService: SendReceiveService,
+    private notifierService: NotifierService,
+    private http: HttpClient
+  ) {}
 
   ngOnInit() {
     this.filterData = {
       filterColumnNames: [
-        { "Key": 'sno', "Value": "" },
-        { "Key": 'userName', "Value": "" },
-        { "Key": 'firstName', "Value": "" },
-        { "Key": 'lastName', "Value": "" },
-        { "Key": 'email', "Value": "" },
-        { "Key": 'roleName', "Value": "" },
+        { Key: 'sno', Value: '' },
+        { Key: 'userName', Value: '' },
+        { Key: 'firstName', Value: '' },
+        { Key: 'lastName', Value: '' },
+        { Key: 'email', Value: '' },
+        { Key: 'roleName', Value: '' },
       ],
       gridData: this.gridData,
       dataSource: this.dataSource,
       paginator: this.paginator,
-      sort: this.sort
+      sort: this.sort,
     };
     this.AddUserForm = this.formBuilder.group({
       userName: ['', Validators.required],
-      password: ['', Validators.compose([ Validators.minLength(12), Validators.pattern(MyAppHttp.passwordValidation)])],
+      password: [
+        '',
+        Validators.compose([
+          Validators.minLength(12),
+          Validators.pattern(MyAppHttp.passwordValidation),
+        ]),
+      ],
       firstName: ['', Validators.required],
       lastName: ['', Validators.required],
-      email: ['', Validators.compose([
-        Validators.required,
-        Validators.maxLength(50),
-        Validators.pattern(
-          /^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$/
-        ),
-      ])],
+      email: [
+        '',
+        Validators.compose([
+          Validators.required,
+          Validators.maxLength(50),
+          Validators.pattern(
+            /^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$/
+          ),
+        ]),
+      ],
       roleId: ['', Validators.required],
       status: ['Y'],
       // remark: [''],
-      mobileNumber: ['', Validators.required]
+      mobileNumber: ['', Validators.required],
     });
     this.getRoles();
     this.setPageLevelPermissions();
@@ -104,7 +139,7 @@ export class UserComponent implements OnInit {
   }
 
   getUsers() {
-    this.userService.getUsersList().subscribe(response => {
+    this.userService.getUsersList().subscribe((response) => {
       const userData: any = [];
       for (let i = 0; i < response.length; i++) {
         response[i].sno = i + 1;
@@ -127,7 +162,7 @@ export class UserComponent implements OnInit {
       for (let col of this.filterData.filterColumnNames) {
         col.Value = '';
       }
-    })
+    });
   }
 
   getRoles() {
@@ -138,14 +173,14 @@ export class UserComponent implements OnInit {
         }
       }
       this.getUsers();
-    })
+    });
   }
 
   onCheckStatus(event: any) {
     if (event.checked) {
-      this.AddUserForm.controls['status'].setValue("Y");
+      this.AddUserForm.controls['status'].setValue('Y');
     } else {
-      this.AddUserForm.controls['status'].setValue("N");
+      this.AddUserForm.controls['status'].setValue('N');
     }
   }
 
@@ -164,18 +199,28 @@ export class UserComponent implements OnInit {
           roleId: this.AddUserForm.value.roleId,
           status: this.AddUserForm.value.status,
           mobileNumber: this.AddUserForm.value.mobileNumber,
-        }
-        this.userService.saveUser(user).subscribe((response) => {
-          this.editMode = false;
-          this.isAddUserForm = false;
-          this.getUsers();
-          this.AddUserForm.reset();
-          this.AddUserForm.controls['status'].setValue('Y');
-          this.notifierService.showNotification('Success', MyAppHttp.ToasterMessage.userSaved);
-        }, (error) => {
-          console.log('Error saving user:', error);
-          this.notifierService.showNotification('Error', 'Failed to save user. Please try again.');
-        });
+        };
+
+        this.userService.saveUser(user).subscribe(
+          (response) => {
+            this.editMode = false;
+            this.isAddUserForm = false;
+            this.getUsers();
+            this.AddUserForm.reset();
+            this.AddUserForm.controls['status'].setValue('Y');
+            this.notifierService.showNotification(
+              'Success',
+              MyAppHttp.ToasterMessage.userSaved
+            );
+          },
+          (error) => {
+            console.log('Error saving user:', error);
+            this.notifierService.showNotification(
+              'Error',
+              'Failed to save user. Please try again.'
+            );
+          }
+        );
       } else {
         // For add mode - create a proper user object instead of using form value directly
         const formValues = this.AddUserForm.value;
@@ -187,35 +232,48 @@ export class UserComponent implements OnInit {
           email: formValues.email,
           roleId: formValues.roleId,
           status: formValues.status || 'Y',
-          mobileNumber: formValues.mobileNumber
+          mobileNumber: formValues.mobileNumber,
         };
-        
+
         console.log('Sending user data:', JSON.stringify(newUser));
-        
-        this.userService.addUser(newUser).subscribe((response) => {
-          if (response && response.statusCode == 200) {
-            this.isAddUserForm = false;
-            this.getUsers();
-            this.AddUserForm.reset();
-            this.AddUserForm.controls['status'].setValue('Y');
-            this.notifierService.showNotification('Success', response.message || 'User added successfully');
+
+        this.userService.addUser(newUser).subscribe(
+          (response) => {
+            if (response && response.statusCode == 200) {
+              this.isAddUserForm = false;
+              this.getUsers();
+              this.AddUserForm.reset();
+              this.AddUserForm.controls['status'].setValue('Y');
+              this.notifierService.showNotification(
+                'Success',
+                response.message || 'User added successfully'
+              );
+            } else {
+              this.notifierService.showNotification(
+                'Error',
+                response?.message || 'Failed to add user'
+              );
+            }
+          },
+          (error) => {
+            console.log('Error adding user:', error);
+            let errorMessage =
+              error.error?.errorMessage ||
+              'Failed to add user. Please try again.';
+            this.notifierService.showNotification('Error', errorMessage);
           }
-          else {
-            this.notifierService.showNotification('Error', response?.message || 'Failed to add user');
-          }
-        }, (error) => {
-          console.log('Error adding user:', error);
-          let errorMessage = error.error?.errorMessage || 'Failed to add user. Please try again.';
-          this.notifierService.showNotification('Error', errorMessage);
-        });
+        );
       }
     } else {
       // Mark all form controls as touched to trigger validation messages
-      Object.keys(this.AddUserForm.controls).forEach(key => {
+      Object.keys(this.AddUserForm.controls).forEach((key) => {
         const control = this.AddUserForm.get(key);
         control?.markAsTouched();
       });
-      this.notifierService.showNotification('Error', 'Please fill all required fields correctly');
+      this.notifierService.showNotification(
+        'Error',
+        'Please fill all required fields correctly'
+      );
     }
   }
 
@@ -232,18 +290,21 @@ export class UserComponent implements OnInit {
   }
 
   setPageLevelPermissions() {
-    if (localStorage.getItem("LoginData")) {
-      let data = localStorage.getItem("LoginData");
+    if (localStorage.getItem('LoginData')) {
+      let data = localStorage.getItem('LoginData');
       if (data) {
         this.loginData = JSON.parse(data);
       }
       this.menuList = this.loginData.permissions;
       for (let menu of this.menuList) {
         for (let subModule of menu.submodules) {
-          if (subModule.subModuleName == "Users") {
+          if (subModule.subModuleName == 'Users') {
             this.permissionName = subModule.permissionName;
             console.log(this.permissionName);
-            this.pagePermissions = this.sendReceiveService.getPageLevelPermissions(this.permissionName);
+            this.pagePermissions =
+              this.sendReceiveService.getPageLevelPermissions(
+                this.permissionName
+              );
           }
         }
       }
@@ -261,7 +322,7 @@ export class UserComponent implements OnInit {
       email: user.email,
       roleId: user.roleId,
       status: user.status,
-      mobileNumber: user.mobileNumber
+      mobileNumber: user.mobileNumber,
     });
     this.editMode = true;
     this.editUsername = user.userName;
@@ -276,27 +337,33 @@ export class UserComponent implements OnInit {
     }
     this.userService.saveUser(user).subscribe((response) => {
       this.getUsers();
-    })
+    });
   }
 
   onUserDelete(user: any) {
     let message = 'Are you sure you want to delete?';
     this.sendReceiveService.confirmationDialog(message).subscribe((result) => {
       if (!!result) {
-        this.userService.deleteUser(user).subscribe((response) => {
-          if (response.statusCode == 200) {
-            this.getUsers();
-            // this.sendReceiveService.showToast(MyAppHttp.ToastType.SUCCESS, 'Success', response.message)
-            this.notifierService.showNotification('Success', response.message);
-          } else {
-            // this.sendReceiveService.showToast(MyAppHttp.ToastType.ERROR, 'Error', response.message)
-            this.notifierService.showNotification('Error', response.message);
+        this.userService.deleteUser(user).subscribe(
+          (response) => {
+            if (response.statusCode == 200) {
+              this.getUsers();
+              // this.sendReceiveService.showToast(MyAppHttp.ToastType.SUCCESS, 'Success', response.message)
+              this.notifierService.showNotification(
+                'Success',
+                response.message
+              );
+            } else {
+              // this.sendReceiveService.showToast(MyAppHttp.ToastType.ERROR, 'Error', response.message)
+              this.notifierService.showNotification('Error', response.message);
+            }
+          },
+          (error) => {
+            console.log(error);
           }
-        }, error => {
-          console.log(error);
-        });
+        );
       }
-    })
+    });
   }
 
   showPassword() {
@@ -313,41 +380,59 @@ export class UserComponent implements OnInit {
     }, MyAppHttp.notificationTimeOut);
   }
 
-  onApprove(element: any){
+  onApprove(element: any) {
     let message = 'Are you sure you want to approve this user?';
     this.sendReceiveService.confirmationDialog(message).subscribe((result) => {
       if (!!result) {
         try {
           // For testing purposes, simulate a successful approval
           // In a real environment, this would call the API
-          console.log('Approving user:', element);
-          
+          // console.log('Approving user:', element);
+
           // Update the user in the local list
-          const userIndex = this.UserList.findIndex((user: any) => user.id === element.id);
+          const userIndex = this.UserList.findIndex(
+            (user: any) => user.id === element.id
+          );
           if (userIndex !== -1) {
             this.UserList[userIndex].roleId = 8; // Set to appropriate role ID
             this.UserList[userIndex].roleName = 'Approved User'; // Update role name
             this.UserList[userIndex].status = 'Y'; // Set status to active
-            
+            const data = {
+              email: this.UserList[userIndex].email,
+              roleId: this.UserList[userIndex].roleId,
+            };
+            console.log('Approving user:', data);
+
+            this.http
+              .post('http://localhost:9090/register/approve_user', data)
+              .subscribe((response) => {
+                console.log('User approved:', response);
+              });
             // Update the data source
             this.dataSource = new MatTableDataSource(this.UserList);
             this.filterData.dataSource = this.dataSource;
             this.dataSource.paginator = this.paginator;
             this.dataSource.sort = this.sort;
-            
-            this.notifierService.showNotification('Success', 'User approved successfully');
+
+            this.notifierService.showNotification(
+              'Success',
+              'User approved successfully'
+            );
           } else {
             this.notifierService.showNotification('Error', 'User not found');
           }
         } catch (error) {
           console.error('Error approving user:', error);
-          this.notifierService.showNotification('Error', 'Failed to approve user');
+          this.notifierService.showNotification(
+            'Error',
+            'Failed to approve user'
+          );
         }
       }
     });
   }
-  
-  onReject(element: any){
+
+  onReject(element: any) {
     let message = 'Are you sure you want to reject this user?';
     this.sendReceiveService.confirmationDialog(message).subscribe((result) => {
       if (!!result) {
@@ -355,24 +440,30 @@ export class UserComponent implements OnInit {
           // For testing purposes, simulate a successful rejection
           // In a real environment, this would call the API
           console.log('Rejecting user:', element);
-          
+
           // Remove the user from the local list
-          this.UserList = this.UserList.filter((user: any) => user.id !== element.id);
-          
+          this.UserList = this.UserList.filter(
+            (user: any) => user.id !== element.id
+          );
+
           // Update the data source
           this.dataSource = new MatTableDataSource(this.UserList);
           this.filterData.dataSource = this.dataSource;
           this.dataSource.paginator = this.paginator;
           this.dataSource.sort = this.sort;
-          
-          this.notifierService.showNotification('Success', 'User rejected successfully');
+
+          this.notifierService.showNotification(
+            'Success',
+            'User rejected successfully'
+          );
         } catch (error) {
           console.error('Error rejecting user:', error);
-          this.notifierService.showNotification('Error', 'Failed to reject user');
+          this.notifierService.showNotification(
+            'Error',
+            'Failed to reject user'
+          );
         }
       }
     });
   }
-
-
 }
